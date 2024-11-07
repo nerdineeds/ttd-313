@@ -10,23 +10,33 @@ interface RichTextChild {
 }
 
 interface RichTextElement {
-  type: 'paragraph' | 'heading' | 'list' | 'link'; // Extend with other types if needed
+  type: 'paragraph' | 'heading' | 'list' | 'link';
   level?: number; // For headings
   children: RichTextChild[];
 }
 
 interface RichTextProps {
   content: RichTextElement[];
+  paragraphClassName?: string;
+  headingClassName?: string;
+  listClassName?: string;
+  linkClassName?: string;
 }
 
-const RichText: React.FC<RichTextProps> = ({ content }) => {
+const RichText: React.FC<RichTextProps> = ({
+  content,
+  paragraphClassName = 'mb-2 ', // Default styles
+  headingClassName = 'font-bold text-2xl',
+  listClassName = 'list-disc pl-5 mb-4',
+  linkClassName = 'text-blue-500 underline',
+}) => {
   return (
     <div>
       {content.map((element, index) => {
         switch (element.type) {
           case 'paragraph':
             return (
-              <p key={index}>
+              <p key={index} className={paragraphClassName}>
                 {element.children.map((child, i) => (
                   <RichTextChildComponent key={i} child={child} />
                 ))}
@@ -38,7 +48,7 @@ const RichText: React.FC<RichTextProps> = ({ content }) => {
               element.level || 1
             }` as keyof JSX.IntrinsicElements;
             return (
-              <HeadingTag key={index}>
+              <HeadingTag key={index} className={headingClassName}>
                 {element.children.map((child, i) => (
                   <RichTextChildComponent key={i} child={child} />
                 ))}
@@ -47,7 +57,7 @@ const RichText: React.FC<RichTextProps> = ({ content }) => {
 
           case 'list':
             return (
-              <ul key={index}>
+              <ul key={index} className={listClassName}>
                 {element.children.map((child, i) => (
                   <li key={i}>
                     <RichTextChildComponent child={child} />
@@ -60,9 +70,10 @@ const RichText: React.FC<RichTextProps> = ({ content }) => {
             return (
               <a
                 key={index}
-                href={element.children[0]?.text} // assuming link URL is in `text`
+                href={element.children[0]?.text}
                 target="_blank"
                 rel="noopener noreferrer"
+                className={linkClassName}
               >
                 {element.children.map((child, i) => (
                   <RichTextChildComponent key={i} child={child} />
@@ -78,13 +89,13 @@ const RichText: React.FC<RichTextProps> = ({ content }) => {
   );
 };
 
-// Child component to handle formatting of text within rich text elements
+// Helper component to apply inline styles for rich text child elements
 const RichTextChildComponent: React.FC<{ child: RichTextChild }> = ({
   child,
 }) => {
   let content = child.text;
 
-  // Apply styles based on the formatting flags
+  // Apply inline styling if applicable
   if (child.bold) content = <strong>{content}</strong>;
   if (child.italic) content = <em>{content}</em>;
   if (child.underline) content = <u>{content}</u>;

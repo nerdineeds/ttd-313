@@ -5,12 +5,8 @@ import Link from 'next/link';
 import { CiClock2 } from 'react-icons/ci';
 import Category from './category/[category]/page';
 import CategoryRow from '@/components/categoryRow';
-import { getClient } from '@/config/api';
-import { gql } from '@apollo/client';
-import qs from 'qs';
 import {
   getStrapiData,
-  globalSettingsQuery,
   homePageQuery,
   productCollectionsQuery,
 } from '@/utils/strapi-url';
@@ -44,19 +40,6 @@ const shopCategories = [
   },
 ];
 
-async function fetchHomePageData() {
-  const data = await getStrapiData('api/homepage', homePageQuery);
-  return data;
-}
-
-async function fetchProductCollections() {
-  const data = await getStrapiData(
-    'api/products',
-    productCollectionsQuery
-  );
-  return data;
-}
-
 export default async function Home() {
   // Fetch data for the homepage using homePageQuery
   const homeData = await getStrapiData(
@@ -74,7 +57,9 @@ export default async function Home() {
     hours,
   } = homeData.data.attributes;
 
-  console.log({ hours: hours.operatingHours });
+  console.log({
+    orderSteps: orderSteps[0].Step,
+  });
   return (
     <div>
       <HomeHero
@@ -105,14 +90,18 @@ export default async function Home() {
           <h3 className="text-3xl font-bold uppercase">
             How to Order
           </h3>
-          <ul className="list-decimal w-fit ml-auto my-4">
-            <li>
-              Text <a href="#">(313)-402-4088</a>
-            </li>
-            <li>Send a photo copy of ID, name, location, more</li>
-            <li>Wait for confirmation</li>
-            <li>Send us your order</li>
-            <li>Enjoy</li>
+          <ul className=" w-fit ml-auto my-4">
+            {orderSteps.map((step) => (
+              <li key={step.id} className="mb-3">
+                <p className="font-semibold">
+                  {`${step.id}. ${step.Step}`}
+                </p>
+                <RichText
+                  content={step.details}
+                  paragraphClassName="text-sm mb-2"
+                />
+              </li>
+            ))}
           </ul>
           <button
             type="button"
