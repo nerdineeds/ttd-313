@@ -22,11 +22,13 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({
-  navigation = [],
+  navigation,
   logo,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  console.log(logo.data.attributes?.url);
+  const logoUrl = logo?.data?.attributes?.url;
   return (
     <header className="bg-white">
       <nav
@@ -36,13 +38,13 @@ const Navigation: React.FC<NavigationProps> = ({
         {/* Logo */}
         <a href="/" className="-m-1.5 p-1.5">
           <span className="sr-only">Your Company</span>
-          {logo?.url ? (
+          {logo ? (
             <Image
-              alt={logo.alternativeText || 'Logo'}
-              src={logo.url}
-              className="h-8 w-auto"
-              width={200}
-              height={200}
+              alt={logo?.data?.attributes?.alternativeText || 'Logo'}
+              src={logoUrl}
+              className="h-16 w-auto"
+              width={300}
+              height={300}
             />
           ) : (
             <Image
@@ -92,23 +94,15 @@ const Navigation: React.FC<NavigationProps> = ({
           <div className="flex items-center justify-between">
             <a href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
-              {logo?.url ? (
-                <Image
-                  alt={logo.alternativeText || 'Logo'}
-                  src={logo.url}
-                  className="h-8 w-auto"
-                  width={200}
-                  height={200}
-                />
-              ) : (
-                <Image
-                  alt="Placeholder Logo"
-                  src="https://images.unsplash.com/photo-1518469669531-9b8c528f909d?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  className="h-8 w-auto"
-                  width={200}
-                  height={200}
-                />
-              )}
+              <Image
+                alt={
+                  logo?.data?.attributes?.alternativeText || 'Logo'
+                }
+                src={logoUrl}
+                className="h-8 w-auto"
+                width={200}
+                height={200}
+              />
             </a>
             <button
               type="button"

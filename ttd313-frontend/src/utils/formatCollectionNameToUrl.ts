@@ -17,4 +17,3 @@ export function formatCollectionNameToUrl(collectionName) {
 const formattedUrl = formatCollectionNameToUrl(
   'Live Psilocybin & More'
 );
-console.log(formattedUrl); // Output: 'live-psilocybin-and-more'

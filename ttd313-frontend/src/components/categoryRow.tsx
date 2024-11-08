@@ -9,17 +9,15 @@ const CategoryRow = ({ productCategories }) => {
 
   return (
     <div
-      className={`grid grid-cols-2 sm:grid-cols-3  gap-4 my-6 w-full px-4 lg:px-0`}
+      className={`grid grid-cols-2 sm:grid-cols-3  gap-4 my-6 w-full lg:px-0`}
     >
       {productCategories?.map((category, index) => {
         const catName = category.attributes.collectionName;
         const catImage = category.attributes.collectionImage;
-        // console.log(formatCollectionNameToUrl(catName));
 
         const categoryImage = catImage.data
           ? catImage.data
           : placeholderImg;
-        console.log(categoryImage);
         return (
           <Link
             href={`/category/${formatCollectionNameToUrl(catName)}`}

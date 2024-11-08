@@ -18,9 +18,8 @@ export default async function HomeHero({
   image,
   link,
 }: HomeHeroProps) {
-
   return (
-    <div className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-32 lg:px-8 shadow-2xl sm:rounded-3xl">
+    <div className="relative isolate overflow-hidden bg-gray-900 px-6 py-20 sm:py-32 lg:px-8 shadow-2xl rounded-3xl">
       <img
         alt=""
         src={image}

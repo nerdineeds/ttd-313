@@ -36,7 +36,7 @@ export default async function Home() {
   } = homeData?.data?.attributes;
 
   return (
-    <div>
+    <div className="px-4 lg:px-8">
       <HomeHero
         title="TreeTop Direct"
         link={{ label: 'Check Out the Menu', href: '/shop' }}
@@ -44,7 +44,7 @@ export default async function Home() {
       {homeData ? (
         <>
           <div className="flex items-stretch gap-y-6 lg:gap-x-6 my-6 flex-col lg:flex-row">
-            <div className="relative w-full lg:w-1/2 px-4 py-12 text-center shadow-xl sm:rounded-3xl flex flex-col  text-white overflow-clip justify-center">
+            <div className="relative w-full lg:w-1/2 px-4 py-10 text-center shadow-xl rounded-3xl flex flex-col  text-white overflow-clip justify-center">
               <Image
                 fill
                 src="/images/peopl.jpg"
@@ -57,13 +57,19 @@ export default async function Home() {
               <h3 className="text-3xl font-bold uppercase">
                 Delivery Areas
               </h3>
-              <RichText content={deliveryArea} />
+              <RichText
+                content={deliveryArea}
+                paragraphClassName="text-sm leading-6 mt-2"
+              />
               <div className="mt-4">
-                <CiClock2 className="w-28 h-8 text-center mx-auto mb-3" />
-                <RichText content={hours.operatingHours} />
+                <CiClock2 className="w-28 h-8 text-center mx-auto mb-2" />
+                <RichText
+                  content={hours.operatingHours}
+                  paragraphClassName="mb-1"
+                />
               </div>
             </div>
-            <div className="w-full lg:w-1/2 py-6 px-6 text-right shadow-xl sm:rounded-3xl bg-gray-100 flex flex-col justify-between">
+            <div className="w-full lg:w-1/2 py-6 px-6 text-right shadow-xl rounded-3xl bg-gray-100 flex flex-col justify-between">
               <h3 className="text-3xl font-bold uppercase">
                 How to Order
               </h3>
@@ -82,7 +88,7 @@ export default async function Home() {
               </ul>
               <button
                 type="button"
-                className="rounded bg-indigo-500 px-20 py-3 w-fit ml-auto text-base font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="rounded bg-blue-950  px-20 py-3 w-fit ml-auto text-base font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 <a href="tel:123456789">Text to Order</a>
               </button>

@@ -45,7 +45,7 @@ const Deals: React.FC<DealsProps> = ({
 }) => {
   return (
     <div className="flex items-stretch gap-y-6 lg:gap-x-6 my-6 flex-col lg:flex-row">
-      <div className="relative w-full lg:w-1/2 px-12 backdrop: py-12 shadow-xl sm:rounded-3xl flex flex-col  text-white overflow-clip justify-center">
+      <div className="relative w-full lg:w-1/2 px-12 backdrop: py-12 shadow-xl rounded-3xl flex flex-col  text-white overflow-clip justify-center">
         <Image
           fill
           src={placeholderImg}
@@ -69,7 +69,6 @@ const Deals: React.FC<DealsProps> = ({
             Daily Deals
           </h3>
           {dailyDeals.map((deal) => {
-            console.log(deal);
             return (
               <div key={deal.id} className="text-center">
                 <p className="mb-1">- {deal.dailyName}</p>
@@ -78,7 +77,7 @@ const Deals: React.FC<DealsProps> = ({
           })}
         </div>
       </div>
-      <div className="w-full lg:w-1/2 py-6 px-6 text-right shadow-xl sm:rounded-3xl bg-gray-100 flex flex-col">
+      <div className="w-full lg:w-1/2 py-6 px-6 text-right shadow-xl rounded-3xl bg-gray-100 flex flex-col">
         <h3 className="text-2xl uppercase font-semibold text-center underline mb-4">
           SPECIALS
         </h3>
