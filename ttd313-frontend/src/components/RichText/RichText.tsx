@@ -25,7 +25,7 @@ interface RichTextProps {
 
 const RichText: React.FC<RichTextProps> = ({
   content,
-  paragraphClassName = 'mb-2 ', // Default styles
+  paragraphClassName = 'mb-2', // Default styles
   headingClassName = 'font-bold text-2xl',
   listClassName = 'list-disc pl-5 mb-4',
   linkClassName = 'text-blue-500 underline',

@@ -23,7 +23,13 @@ export const globalSettingsQuery = qs.stringify({
   },
 });
 
+export const productQuery = qs.stringify;
+
 export const productCollectionsQuery = qs.stringify({
+  populate: '*', // Populate all fields for products
+});
+
+export const productsQuery = qs.stringify({
   populate: '*', // Populate all fields for products
 });
 

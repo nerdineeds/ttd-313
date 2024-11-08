@@ -14,6 +14,11 @@ const nextConfig = {
         hostname: 'tailwindui.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
     ],
   },
   // other Next.js config options

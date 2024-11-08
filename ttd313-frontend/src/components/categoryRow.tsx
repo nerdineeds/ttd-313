@@ -11,7 +11,7 @@ const CategoryRow = ({ productCategories }) => {
     <div
       className={`grid grid-cols-2 sm:grid-cols-3  gap-4 my-6 w-full px-4 lg:px-0`}
     >
-      {productCategories.map((category, index) => {
+      {productCategories?.map((category, index) => {
         const catName = category.attributes.collectionName;
         const catImage = category.attributes.collectionImage;
         // console.log(formatCollectionNameToUrl(catName));

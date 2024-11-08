@@ -39,7 +39,7 @@ export default async function Home() {
     <div>
       <HomeHero
         title="TreeTop Direct"
-        link={{ label: 'Check Out the Menu', href: '/menu' }}
+        link={{ label: 'Check Out the Menu', href: '/shop' }}
       />
       {homeData ? (
         <>

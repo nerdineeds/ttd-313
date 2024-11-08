@@ -5,13 +5,44 @@ import Image from 'next/image';
 const placeholderImg =
   'https://images.unsplash.com/photo-1518469669531-9b8c528f909d?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
-const Deals = ({
+// Define TypeScript interfaces for props
+interface RichTextChild {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  type: 'text';
+}
+
+interface RichTextElement {
+  type: 'paragraph' | 'heading' | 'list' | 'link';
+  level?: number;
+  children: RichTextChild[];
+}
+
+interface DailyDeal {
+  id: string;
+  dailyName: string;
+}
+
+interface SpecialDeal {
+  id: string;
+  dealTitle: string;
+}
+
+interface DealsProps {
+  generalUpdates: RichTextElement[];
+  dailyDeals?: DailyDeal[];
+  specials?: SpecialDeal[];
+  adhocInfo: RichTextElement[];
+}
+
+const Deals: React.FC<DealsProps> = ({
   generalUpdates,
-  dailyDeals,
-  specials,
+  dailyDeals = [],
+  specials = [],
   adhocInfo,
 }) => {
-  console.log({ adhocInfo });
   return (
     <div className="flex items-stretch gap-y-6 lg:gap-x-6 my-6 flex-col lg:flex-row">
       <div className="relative w-full lg:w-1/2 px-12 backdrop: py-12 shadow-xl sm:rounded-3xl flex flex-col  text-white overflow-clip justify-center">
@@ -52,7 +83,6 @@ const Deals = ({
           SPECIALS
         </h3>
         {specials.map((deal) => {
-          console.log({ deal });
           return (
             <div key={deal.id} className="text-center">
               <p className="mb-1 text-black">{deal.dealTitle}</p>
