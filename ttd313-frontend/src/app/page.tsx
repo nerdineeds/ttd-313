@@ -2,7 +2,6 @@ import CTA from '@/components/cta';
 import HomeHero from '@/components/homeHero';
 import Image from 'next/image';
 import { CiClock2 } from 'react-icons/ci';
-import Category from './category/[category]/page';
 import CategoryRow from '@/components/categoryRow';
 import {
   getStrapiData,
@@ -11,7 +10,6 @@ import {
 } from '@/utils/strapi-url';
 import RichText from '@/components/RichText/RichText';
 import Deals from '@/components/deals';
-import { spec } from 'node:test/reporters';
 
 export default async function Home() {
   // Fetch data for the homepage using homePageQuery

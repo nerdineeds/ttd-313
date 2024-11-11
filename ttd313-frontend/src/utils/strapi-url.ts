@@ -11,6 +11,7 @@ export const homePageQuery = qs.stringify({
     orderSteps: true,
     deliveryArea: true,
     hours: true,
+    Nav: true,
   },
 });
 

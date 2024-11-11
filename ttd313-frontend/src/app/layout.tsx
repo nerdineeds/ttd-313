@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
 import './globals.css';
 import Navigation from '@/components/navigation';
 import Footer from '@/components/footer';
@@ -7,18 +6,6 @@ import {
   getStrapiData,
   globalSettingsQuery,
 } from '@/utils/strapi-url';
-
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
-});
-
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -48,23 +35,22 @@ export default async function RootLayout({
       link: '/',
     },
     {
-      name: 'About',
-      link: '/about',
+      name: 'Menu',
+      link: '/menu',
     },
-    // You can include more links dynamically if needed
+    {
+      name: 'About',
+      link: '/facts-and-questions',
+    },
   ];
-
-  console.log(globalSettings.socialMediaHandles);
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased lg:max-w-7xl mx-auto`}
-      >
+      <body className={` antialiased lg:max-w-7xl mx-auto`}>
         {/* Pass globalSettings to Navigation and Footer */}
         <Navigation
           navigation={navigationLinks}
-          logo={globalSettings.logo}
+          logo={globalSettings.logo?.data?.attributes}
         />
         {children}
         <Footer

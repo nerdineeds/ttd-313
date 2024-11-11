@@ -40,7 +40,7 @@ const Footer = ({ navigation, logo, socials }) => {
   const logoUrl = logo?.data?.attributes?.url;
   return (
     <footer className="bg-white">
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-10 sm:py-24 lg:px-8">
+      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-9 sm:py-10 lg:px-8">
         {/* Logo */}
         <Image
           alt={logo?.data?.attributes?.alternativeText || 'Logo'}

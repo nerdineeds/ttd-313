@@ -22,25 +22,33 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({
-  navigation,
+  navigation = [],
   logo,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const logoUrl = logo?.url || '';
 
-  console.log(logo.data.attributes?.url);
-  const logoUrl = logo?.data?.attributes?.url;
+  const NavigationLink = ({ name, link }: Navigation) => (
+    <a
+      href={link}
+      className="text-sm font-semibold text-gray-900 hover:underline"
+    >
+      {name}
+    </a>
+  );
+
   return (
-    <header className="bg-white">
+    <header className="bg-white shadow">
       <nav
         aria-label="Global"
         className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
       >
         {/* Logo */}
-        <a href="/" className="-m-1.5 p-1.5">
+        <a href="/" className="flex items-center -m-1.5 p-1.5">
           <span className="sr-only">Your Company</span>
-          {logo ? (
+          {logoUrl ? (
             <Image
-              alt={logo?.data?.attributes?.alternativeText || 'Logo'}
+              alt={logo.alternativeText || 'Logo'}
               src={logoUrl}
               className="h-16 w-auto"
               width={300}
@@ -49,7 +57,7 @@ const Navigation: React.FC<NavigationProps> = ({
           ) : (
             <Image
               alt="Placeholder Logo"
-              src="https://images.unsplash.com/photo-1518469669531-9b8c528f909d?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="https://images.unsplash.com/photo-1518469669531-9b8c528f909d?q=80&w=1548&auto=format&fit=crop"
               className="h-8 w-auto"
               width={200}
               height={200}
@@ -58,29 +66,27 @@ const Navigation: React.FC<NavigationProps> = ({
         </a>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden lg:flex lg:gap-x-12">
+        <div className="hidden lg:flex lg:items-center lg:gap-x-8">
           {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.link}
-              className="text-sm font-semibold text-gray-900"
-            >
-              {item.name}
-            </a>
+            <NavigationLink key={item.name} {...item} />
           ))}
+          <a
+            href="tel:1234567890"
+            className="text-sm font-semibold text-gray-900 border-2 px-6 py-2 hover:bg-gray-100"
+          >
+            Order Now
+          </a>
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex lg:hidden">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-          >
-            <span className="sr-only">Open main menu</span>
-            <HiBars3 aria-hidden="true" className="h-6 w-6" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(true)}
+          className="lg:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+          aria-label="Open main menu"
+        >
+          <HiBars3 className="h-6 w-6" />
+        </button>
       </nav>
 
       {/* Mobile Menu */}
@@ -89,43 +95,42 @@ const Navigation: React.FC<NavigationProps> = ({
         onClose={() => setMobileMenuOpen(false)}
         className="lg:hidden"
       >
-        <div className="fixed inset-0 z-10" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+        <div className="fixed inset-0 z-10 bg-black/20" />
+        <DialogPanel className="fixed inset-y-0 right-0 z-20 w-full max-w-sm overflow-y-auto bg-white px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <a href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
-              <Image
-                alt={
-                  logo?.data?.attributes?.alternativeText || 'Logo'
-                }
-                src={logoUrl}
-                className="h-8 w-auto"
-                width={200}
-                height={200}
-              />
+              {logoUrl && (
+                <Image
+                  alt={logo.alternativeText || 'Logo'}
+                  src={logoUrl}
+                  className="h-8 w-auto"
+                  width={200}
+                  height={200}
+                />
+              )}
             </a>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
               className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              aria-label="Close menu"
             >
-              <span className="sr-only">Close menu</span>
-              <HiXMark aria-hidden="true" className="h-6 w-6" />
+              <HiXMark className="h-6 w-6" />
             </button>
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.link}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
+
+          <div className="mt-6">
+            <div className="space-y-4">
+              {navigation.map((item) => (
+                <NavigationLink key={item.name} {...item} />
+              ))}
+              <a
+                href="tel:1234567890"
+                className="text-sm font-semibold text-gray-900 border-2 px-4 py-2 block w-full text-center hover:bg-gray-100"
+              >
+                Order Now
+              </a>
             </div>
           </div>
         </DialogPanel>
