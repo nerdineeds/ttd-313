@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -13,7 +15,33 @@ import {
 import Image from 'next/image';
 import { HiHeart } from 'react-icons/hi2';
 
-const getSocialIcon = (platform) => {
+interface Logo {
+  alternativeText?: string;
+  caption?: string | null;
+  url: string;
+}
+
+interface NavigationItem {
+  name: string;
+  href: string;
+}
+
+interface SocialItem {
+  name: string;
+  url: string;
+}
+
+interface FooterProps {
+  navigation?: NavigationItem[];
+  logo?: {
+    data?: {
+      attributes?: Logo;
+    };
+  };
+  socials?: SocialItem[];
+}
+
+const getSocialIcon = (platform: string): React.ReactNode => {
   switch (platform.toLowerCase()) {
     case 'facebook':
       return <FaFacebook aria-hidden="true" className="h-6 w-6" />;
@@ -36,25 +64,33 @@ const getSocialIcon = (platform) => {
   }
 };
 
-const Footer = ({ navigation, logo, socials }) => {
-  const logoUrl = logo?.data?.attributes?.url;
+const Footer: React.FC<FooterProps> = ({
+  navigation = [],
+  logo,
+  socials = [],
+}) => {
+  const logoUrl = logo?.data?.attributes?.url || '';
+
   return (
     <footer className="bg-white">
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-9 sm:py-10 lg:px-8">
         {/* Logo */}
-        <Image
-          alt={logo?.data?.attributes?.alternativeText || 'Logo'}
-          src={logoUrl}
-          className="h-16 w-auto mx-auto mb-8"
-          width={300}
-          height={300}
-        />
+        {logoUrl && (
+          <Image
+            alt={logo?.data?.attributes?.alternativeText || 'Logo'}
+            src={logoUrl}
+            className="h-16 w-auto mx-auto mb-8"
+            width={300}
+            height={300}
+          />
+        )}
+
         {/* Navigation Links */}
         <nav
           aria-label="Footer"
-          className=" flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm/6 mb-0"
+          className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm/6 mb-0"
         >
-          {navigation?.map((item) => (
+          {navigation.map((item) => (
             <a
               key={item.name}
               href={item.href}
@@ -67,7 +103,7 @@ const Footer = ({ navigation, logo, socials }) => {
 
         {/* Social Media Icons */}
         <div className="mt-8 flex justify-center gap-x-10">
-          {socials?.map((item) => (
+          {socials.map((item) => (
             <Link
               key={item.name}
               href={item.url}
@@ -85,9 +121,14 @@ const Footer = ({ navigation, logo, socials }) => {
         <p className="mt-6 text-center text-sm/6 text-gray-600">
           &copy; 2024 TreeTop Direct, Inc. All rights reserved.
         </p>
-        <p className="text-center text-sm/6 text-gray-600 flex items-center justify-center md:my-2 ">
-          Build with <HiHeart /> by{' '}
-          <a href="jagaesthetic.com">JAG Aesthetic</a>
+        <p className="text-center text-sm/6 text-gray-600 flex items-center justify-center md:my-2">
+          Built with <HiHeart className="mx-1 text-red-500" /> by{' '}
+          <a
+            href="https://jagaesthetic.com"
+            className="hover:underline"
+          >
+            JAG Aesthetic
+          </a>
         </p>
       </div>
     </footer>

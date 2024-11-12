@@ -1,8 +1,3 @@
-import {
-  getStrapiData,
-  productCollectionsQuery,
-} from '@/utils/strapi-url';
-
 type HomeHeroProps = {
   title: string;
   slug?: string;
