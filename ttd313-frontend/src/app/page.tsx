@@ -8,8 +8,11 @@ import {
   homePageQuery,
   productCollectionsQuery,
 } from '@/utils/strapi-url';
-import RichText from '@/components/RichText/RichText';
+import RichText, {
+  RichTextElement,
+} from '@/components/RichText/RichText';
 import Deals from '@/components/deals';
+import { stringToRichTextElement } from '@/utils/stringToRichText';
 
 export default async function Home() {
   // Fetch data for the homepage using homePageQuery
@@ -22,6 +25,11 @@ export default async function Home() {
     'api/product-collections',
     productCollectionsQuery
   );
+  interface OrderStep {
+    id: number;
+    Step: string;
+    details: RichTextElement[];
+  }
 
   const {
     generalUpdates,
@@ -31,7 +39,12 @@ export default async function Home() {
     orderSteps,
     deliveryArea,
     hours,
-  } = homeData?.data?.attributes;
+  } = homeData?.data?.attributes || {};
+
+  // Convert strings to RichTextElement[]
+  const generalUpdatesRichText =
+    stringToRichTextElement(generalUpdates);
+  const adhocInfoRichText = stringToRichTextElement(adHocInfo);
 
   return (
     <div className="px-4 lg:px-8">
@@ -56,13 +69,15 @@ export default async function Home() {
                 Delivery Areas
               </h3>
               <RichText
-                content={deliveryArea}
+                content={stringToRichTextElement(deliveryArea)}
                 paragraphClassName="text-sm leading-6 mt-2"
               />
               <div className="mt-4">
                 <CiClock2 className="w-28 h-8 text-center mx-auto mb-2" />
                 <RichText
-                  content={hours.operatingHours}
+                  content={stringToRichTextElement(
+                    hours.operatingHours
+                  )}
                   paragraphClassName="mb-1"
                 />
               </div>
@@ -71,12 +86,10 @@ export default async function Home() {
               <h3 className="text-3xl font-bold uppercase">
                 How to Order
               </h3>
-              <ul className=" w-fit ml-auto my-4">
-                {orderSteps.map((step) => (
+              <ul className="w-fit ml-auto my-4">
+                {orderSteps.map((step: OrderStep) => (
                   <li key={step.id} className="mb-3">
-                    <p className="font-semibold">
-                      {`${step.id}. ${step.Step}`}
-                    </p>
+                    <p className="font-semibold">{`${step.id}. ${step.Step}`}</p>
                     <RichText
                       content={step.details}
                       paragraphClassName="text-sm mb-2"
@@ -98,11 +111,12 @@ export default async function Home() {
             />
           )}
           <Deals
-            generalUpdates={generalUpdates}
+            generalUpdates={generalUpdatesRichText}
             dailyDeals={dailyDeals}
             specials={specialDeals}
-            adhocInfo={adHocInfo}
+            adhocInfo={adhocInfoRichText}
           />
+          ;
         </>
       ) : null}
       <CTA />

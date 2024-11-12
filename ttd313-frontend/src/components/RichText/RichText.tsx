@@ -3,13 +3,13 @@ import React from 'react';
 // Define TypeScript interfaces for props
 interface RichTextChild {
   text: string;
+  type: 'text'; // Ensure the 'type' property is included
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
-  type: 'text';
 }
 
-interface RichTextElement {
+export interface RichTextElement {
   type: 'paragraph' | 'heading' | 'list' | 'link';
   level?: number; // For headings
   children: RichTextChild[];
@@ -23,9 +23,10 @@ interface RichTextProps {
   linkClassName?: string;
 }
 
+// Main RichText component
 const RichText: React.FC<RichTextProps> = ({
   content,
-  paragraphClassName = 'mb-2', // Default styles
+  paragraphClassName = 'mb-2',
   headingClassName = 'font-bold text-2xl',
   listClassName = 'list-disc pl-5 mb-4',
   linkClassName = 'text-blue-500 underline',
@@ -33,6 +34,9 @@ const RichText: React.FC<RichTextProps> = ({
   return (
     <div>
       {content.map((element, index) => {
+        if (!element.children || element.children.length === 0)
+          return null;
+
         switch (element.type) {
           case 'paragraph':
             return (
@@ -67,10 +71,12 @@ const RichText: React.FC<RichTextProps> = ({
             );
 
           case 'link':
+            // Ensure the link has a valid href
+            const linkHref = element.children[0]?.text || '#';
             return (
               <a
                 key={index}
-                href={element.children[0]?.text}
+                href={linkHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={linkClassName}
@@ -93,9 +99,10 @@ const RichText: React.FC<RichTextProps> = ({
 const RichTextChildComponent: React.FC<{ child: RichTextChild }> = ({
   child,
 }) => {
-  let content = child.text;
+  if (!child.text) return null;
 
-  // Apply inline styling if applicable
+  let content: React.ReactNode = child.text;
+
   if (child.bold) content = <strong>{content}</strong>;
   if (child.italic) content = <em>{content}</em>;
   if (child.underline) content = <u>{content}</u>;
