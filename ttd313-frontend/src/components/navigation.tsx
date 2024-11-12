@@ -1,170 +1,140 @@
 'use client';
 
-import Link from 'next/link';
-import PriceDropdown from '@/components/priceDropdown';
-import Breadcrumb from '@/components/Breadcrumb';
-import { placeholderImg } from '@/utils/placeholderImage';
-import { getStrapiData, productQuery } from '@/utils/strapi-url';
+import { useState } from 'react';
+import { Dialog, DialogPanel } from '@headlessui/react';
+import { HiBars3, HiXMark } from 'react-icons/hi2';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-interface ProductAttributes {
-  name: string;
-  description?: string;
-  photo?: {
-    data: {
-      attributes: {
-        url: string;
-        alternativeText?: string;
-      };
-    }[];
-  };
-  product_collection?: {
-    data?: {
-      attributes: {
-        collectionName: string;
-      };
-    };
-  };
-  qtyPrice?: number;
-  weightPrice?: { [key: string]: number }[];
-  thcPercentage?: number;
-  cbdPercentage?: number;
+interface Logo {
+  alternativeText?: string;
+  caption?: string | null;
+  url: string;
 }
 
-export default function ProductPage() {
-  const searchParams = useSearchParams();
-  const productId = searchParams.get('id');
+interface NavigationItem {
+  name: string;
+  link: string;
+}
 
-  const [productDetails, setProductDetails] =
-    useState<ProductAttributes | null>(null);
-  const [loading, setLoading] = useState(true);
+interface NavigationProps {
+  navigation: NavigationItem[];
+  logo: Logo;
+}
 
-  useEffect(() => {
-    if (!productId) return;
-
-    async function fetchProductData() {
-      setLoading(true);
-      const productData = await getStrapiData<{
-        data?: { attributes: ProductAttributes };
-      }>(`api/products/${productId}`, productQuery);
-      setProductDetails(productData?.data?.attributes || null);
-      setLoading(false);
-    }
-
-    fetchProductData();
-  }, [productId]);
-
-  if (!productId) {
-    return (
-      <p className="text-center text-red-600">
-        Product ID not provided
-      </p>
-    );
-  }
-
-  if (loading) {
-    return <p className="text-center">Loading...</p>;
-  }
-
-  if (!productDetails) {
-    return (
-      <p className="text-center text-red-600">Product not found</p>
-    );
-  }
-
-  const productImage =
-    productDetails.photo?.data?.[0]?.attributes.url;
-  const productImageAlt =
-    productDetails.photo?.data?.[0]?.attributes.alternativeText ||
-    'Product Image';
-  const productDescription = productDetails.description;
-  const isFlower =
-    productDetails.product_collection?.data?.attributes
-      .collectionName === 'Flower';
-  const qtyPrice = productDetails.qtyPrice;
-  const weightPrice = productDetails.weightPrice || [];
-
-  const category =
-    productDetails.product_collection?.data?.attributes
-      .collectionName;
-  const productName = productDetails.name;
+const Navigation: React.FC<NavigationProps> = ({
+  navigation,
+  logo,
+}) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="container mx-auto py-12 px-4 lg:px-0">
-      {/* Product Header */}
-      <div className="bg-blue-200/60 text-center rounded-lg mb-4 h-40 lg:h-80 flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold my-2 uppercase">
-          {productName}
-        </h1>
-        <Breadcrumb category={category} productName={productName} />
-      </div>
-
-      <div className="flex flex-col lg:flex-row justify-between gap-x-4 mt-10 lg:mt-20">
-        {/* Product Image */}
-        <div className="w-full lg:w-1/2">
-          <div className="h-[500px] w-full overflow-hidden relative rounded-lg">
-            {productImage ? (
-              <Image
-                src={productImage}
-                alt={productImageAlt}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <Image
-                src={placeholderImg}
-                alt="Placeholder Image"
-                fill
-                className="object-cover"
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Product Details */}
-        <div className="w-full lg:w-1/2 flex flex-col gap-y-4 pt-12">
-          <h2 className="text-3xl font-bold">{productName}</h2>
-          {!isFlower ? (
-            qtyPrice ? (
-              <p className="text-2xl text-green-800">
-                ${qtyPrice}.00
-              </p>
-            ) : (
-              <p className="text-lg text-red-600">
-                Price not available
-              </p>
-            )
-          ) : (
-            <PriceDropdown prices={weightPrice} />
+    <header className="bg-white">
+      <nav
+        aria-label="Global"
+        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+      >
+        {/* Logo */}
+        <Link href="/" className="-m-1.5 p-1.5">
+          <span className="sr-only">Your Company</span>
+          {logo?.url && (
+            <Image
+              alt={logo.alternativeText || 'Logo'}
+              src={logo.url}
+              className="h-16 w-auto"
+              width={300}
+              height={300}
+            />
           )}
-          <p className="text-sm text-gray-700">
-            {productDescription || 'No description available'}
-          </p>
-
-          {(productDetails.thcPercentage ||
-            productDetails.cbdPercentage) && (
-            <div className="mt-4">
-              {productDetails.thcPercentage && (
-                <div>THC: {productDetails.thcPercentage}%</div>
-              )}
-              {productDetails.cbdPercentage && (
-                <div>CBD: {productDetails.cbdPercentage}%</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Footer Link */}
-      <div className="mt-10 text-center">
-        <Link href="/">
-          <a className="text-blue-600 hover:underline">
-            Back to Home
-          </a>
         </Link>
-      </div>
-    </div>
+
+        {/* Desktop Navigation Links */}
+        <div className="hidden lg:flex lg:gap-x-12 items-center">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.link}
+              className="text-sm font-semibold text-gray-900"
+            >
+              {item.name}
+            </Link>
+          ))}
+          <Link
+            href="tel:1234567890"
+            className="text-sm font-semibold text-gray-900 border-2 px-10 py-2"
+          >
+            Order Now
+          </Link>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="flex lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+          >
+            <span className="sr-only">Open main menu</span>
+            <HiBars3 aria-hidden="true" className="h-6 w-6" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      <Dialog
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        className="lg:hidden"
+      >
+        <div className="fixed inset-0 z-10" />
+        <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="-m-1.5 p-1.5">
+              <span className="sr-only">Your Company</span>
+              {logo?.url && (
+                <Image
+                  alt={logo.alternativeText || 'Logo'}
+                  src={logo.url}
+                  className="h-8 w-auto"
+                  width={200}
+                  height={200}
+                />
+              )}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+            >
+              <span className="sr-only">Close menu</span>
+              <HiXMark aria-hidden="true" className="h-6 w-6" />
+            </button>
+          </div>
+          <div className="mt-6 flow-root">
+            <div className="-my-6 divide-y divide-gray-500/10">
+              <div className="space-y-3 py-6">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.link}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <Link
+                  href="tel:1234567890"
+                  className="text-sm font-semibold text-gray-900 border-2 px-1 py-2 block w-fit"
+                >
+                  Order Now
+                </Link>
+              </div>
+            </div>
+          </div>
+        </DialogPanel>
+      </Dialog>
+    </header>
   );
-}
+};
+
+export default Navigation;
