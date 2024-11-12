@@ -1,3 +1,6 @@
+import { placeholderImg } from '@/utils/placeholderImage';
+import Image from 'next/image';
+
 type HomeHeroProps = {
   title: string;
   slug?: string;
@@ -15,9 +18,9 @@ export default async function HomeHero({
 }: HomeHeroProps) {
   return (
     <div className="relative isolate overflow-hidden bg-gray-900 px-6 py-20 sm:py-32 lg:px-8 shadow-2xl rounded-3xl">
-      <img
-        alt=""
-        src={image}
+      <Image
+        alt="hero backgroudn image"
+        src={image || placeholderImg}
         className="absolute inset-0 -z-10 h-full w-full object-cover"
       />
       <div

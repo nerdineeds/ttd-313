@@ -1,142 +1,170 @@
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogPanel } from '@headlessui/react';
-import { HiBars3, HiXMark } from 'react-icons/hi2';
+import Link from 'next/link';
+import PriceDropdown from '@/components/priceDropdown';
+import Breadcrumb from '@/components/Breadcrumb';
+import { placeholderImg } from '@/utils/placeholderImage';
+import { getStrapiData, productQuery } from '@/utils/strapi-url';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
-interface Logo {
-  alternativeText?: string;
-  caption?: string | null;
-  url: string;
-}
-
-interface Navigation {
+interface ProductAttributes {
   name: string;
-  link: string;
+  description?: string;
+  photo?: {
+    data: {
+      attributes: {
+        url: string;
+        alternativeText?: string;
+      };
+    }[];
+  };
+  product_collection?: {
+    data?: {
+      attributes: {
+        collectionName: string;
+      };
+    };
+  };
+  qtyPrice?: number;
+  weightPrice?: { [key: string]: number }[];
+  thcPercentage?: number;
+  cbdPercentage?: number;
 }
 
-interface NavigationProps {
-  navigation?: Navigation[];
-  logo?: Logo;
-}
+export default function ProductPage() {
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
 
-const Navigation: React.FC<NavigationProps> = ({
-  navigation = [],
-  logo,
-}) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const logoUrl = logo?.url || '';
+  const [productDetails, setProductDetails] =
+    useState<ProductAttributes | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const NavigationLink = ({ name, link }: Navigation) => (
-    <a
-      href={link}
-      className="text-sm font-semibold text-gray-900 hover:underline"
-    >
-      {name}
-    </a>
-  );
+  useEffect(() => {
+    if (!productId) return;
+
+    async function fetchProductData() {
+      setLoading(true);
+      const productData = await getStrapiData<{
+        data?: { attributes: ProductAttributes };
+      }>(`api/products/${productId}`, productQuery);
+      setProductDetails(productData?.data?.attributes || null);
+      setLoading(false);
+    }
+
+    fetchProductData();
+  }, [productId]);
+
+  if (!productId) {
+    return (
+      <p className="text-center text-red-600">
+        Product ID not provided
+      </p>
+    );
+  }
+
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
+
+  if (!productDetails) {
+    return (
+      <p className="text-center text-red-600">Product not found</p>
+    );
+  }
+
+  const productImage =
+    productDetails.photo?.data?.[0]?.attributes.url;
+  const productImageAlt =
+    productDetails.photo?.data?.[0]?.attributes.alternativeText ||
+    'Product Image';
+  const productDescription = productDetails.description;
+  const isFlower =
+    productDetails.product_collection?.data?.attributes
+      .collectionName === 'Flower';
+  const qtyPrice = productDetails.qtyPrice;
+  const weightPrice = productDetails.weightPrice || [];
+
+  const category =
+    productDetails.product_collection?.data?.attributes
+      .collectionName;
+  const productName = productDetails.name;
 
   return (
-    <header className="bg-white shadow">
-      <nav
-        aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
-      >
-        {/* Logo */}
-        <a href="/" className="flex items-center -m-1.5 p-1.5">
-          <span className="sr-only">Your Company</span>
-          {logoUrl ? (
-            <Image
-              alt={logo.alternativeText || 'Logo'}
-              src={logoUrl}
-              className="h-16 w-auto"
-              width={300}
-              height={300}
-            />
-          ) : (
-            <Image
-              alt="Placeholder Logo"
-              src="https://images.unsplash.com/photo-1518469669531-9b8c528f909d?q=80&w=1548&auto=format&fit=crop"
-              className="h-8 w-auto"
-              width={200}
-              height={200}
-            />
-          )}
-        </a>
+    <div className="container mx-auto py-12 px-4 lg:px-0">
+      {/* Product Header */}
+      <div className="bg-blue-200/60 text-center rounded-lg mb-4 h-40 lg:h-80 flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-bold my-2 uppercase">
+          {productName}
+        </h1>
+        <Breadcrumb category={category} productName={productName} />
+      </div>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden lg:flex lg:items-center lg:gap-x-8">
-          {navigation.map((item) => (
-            <NavigationLink key={item.name} {...item} />
-          ))}
-          <a
-            href="tel:1234567890"
-            className="text-sm font-semibold text-gray-900 border-2 px-6 py-2 hover:bg-gray-100"
-          >
-            Order Now
-          </a>
+      <div className="flex flex-col lg:flex-row justify-between gap-x-4 mt-10 lg:mt-20">
+        {/* Product Image */}
+        <div className="w-full lg:w-1/2">
+          <div className="h-[500px] w-full overflow-hidden relative rounded-lg">
+            {productImage ? (
+              <Image
+                src={productImage}
+                alt={productImageAlt}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <Image
+                src={placeholderImg}
+                alt="Placeholder Image"
+                fill
+                className="object-cover"
+              />
+            )}
+          </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(true)}
-          className="lg:hidden -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-          aria-label="Open main menu"
-        >
-          <HiBars3 className="h-6 w-6" />
-        </button>
-      </nav>
+        {/* Product Details */}
+        <div className="w-full lg:w-1/2 flex flex-col gap-y-4 pt-12">
+          <h2 className="text-3xl font-bold">{productName}</h2>
+          {!isFlower ? (
+            qtyPrice ? (
+              <p className="text-2xl text-green-800">
+                ${qtyPrice}.00
+              </p>
+            ) : (
+              <p className="text-lg text-red-600">
+                Price not available
+              </p>
+            )
+          ) : (
+            <PriceDropdown prices={weightPrice} />
+          )}
+          <p className="text-sm text-gray-700">
+            {productDescription || 'No description available'}
+          </p>
 
-      {/* Mobile Menu */}
-      <Dialog
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        className="lg:hidden"
-      >
-        <div className="fixed inset-0 z-10 bg-black/20" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-20 w-full max-w-sm overflow-y-auto bg-white px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <a href="/" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
-              {logoUrl && (
-                <Image
-                  alt={logo.alternativeText || 'Logo'}
-                  src={logoUrl}
-                  className="h-8 w-auto"
-                  width={200}
-                  height={200}
-                />
+          {(productDetails.thcPercentage ||
+            productDetails.cbdPercentage) && (
+            <div className="mt-4">
+              {productDetails.thcPercentage && (
+                <div>THC: {productDetails.thcPercentage}%</div>
               )}
-            </a>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
-              aria-label="Close menu"
-            >
-              <HiXMark className="h-6 w-6" />
-            </button>
-          </div>
-
-          <div className="mt-6">
-            <div className="space-y-4">
-              {navigation.map((item) => (
-                <NavigationLink key={item.name} {...item} />
-              ))}
-              <a
-                href="tel:1234567890"
-                className="text-sm font-semibold text-gray-900 border-2 px-4 py-2 block w-full text-center hover:bg-gray-100"
-              >
-                Order Now
-              </a>
+              {productDetails.cbdPercentage && (
+                <div>CBD: {productDetails.cbdPercentage}%</div>
+              )}
             </div>
-          </div>
-        </DialogPanel>
-      </Dialog>
-    </header>
-  );
-};
+          )}
+        </div>
+      </div>
 
-export default Navigation;
+      {/* Footer Link */}
+      <div className="mt-10 text-center">
+        <Link href="/">
+          <a className="text-blue-600 hover:underline">
+            Back to Home
+          </a>
+        </Link>
+      </div>
+    </div>
+  );
+}
