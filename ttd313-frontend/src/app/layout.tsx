@@ -32,15 +32,15 @@ export default async function RootLayout({
   const navigationLinks = [
     {
       name: 'Home',
-      link: '/',
+      href: '/',
     },
     {
       name: 'Menu',
-      link: '/menu',
+      href: '/menu',
     },
     {
       name: 'About',
-      link: '/facts-and-questions',
+      href: '/facts-and-questions',
     },
   ];
 

@@ -20,12 +20,10 @@ interface Logo {
   caption?: string | null;
   url: string;
 }
-
 interface NavigationItem {
   name: string;
   href: string;
 }
-
 interface SocialItem {
   name: string;
   url: string;
