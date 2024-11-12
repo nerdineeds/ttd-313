@@ -11,14 +11,14 @@ interface Logo {
   caption?: string | null;
   url: string;
 }
+
 interface NavigationItem {
   name: string;
   href: string;
 }
-
 interface NavigationProps {
   navigation: NavigationItem[];
-  logo: Logo;
+  logo?: Logo;
 }
 
 const Navigation: React.FC<NavigationProps> = ({
@@ -36,7 +36,7 @@ const Navigation: React.FC<NavigationProps> = ({
         {/* Logo */}
         <Link href="/" className="-m-1.5 p-1.5">
           <span className="sr-only">Your Company</span>
-          {logo?.url && (
+          {logo?.url ? (
             <Image
               alt={logo.alternativeText || 'Logo'}
               src={logo.url}
@@ -44,6 +44,8 @@ const Navigation: React.FC<NavigationProps> = ({
               width={300}
               height={300}
             />
+          ) : (
+            <span className="text-gray-700 font-bold">No Logo</span>
           )}
         </Link>
 
@@ -90,7 +92,7 @@ const Navigation: React.FC<NavigationProps> = ({
           <div className="flex items-center justify-between">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
-              {logo?.url && (
+              {logo?.url ? (
                 <Image
                   alt={logo.alternativeText || 'Logo'}
                   src={logo.url}
@@ -98,6 +100,10 @@ const Navigation: React.FC<NavigationProps> = ({
                   width={200}
                   height={200}
                 />
+              ) : (
+                <span className="text-gray-700 font-bold">
+                  No Logo
+                </span>
               )}
             </Link>
             <button
