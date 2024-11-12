@@ -11,6 +11,18 @@ import React from 'react';
 import { placeholderImg } from '@/utils/placeholderImage';
 import Link from 'next/link';
 
+interface WeightPrice {
+  gram: number;
+  oz: number;
+}
+
+interface ProductCollection {
+  id: number;
+  attributes: {
+    collectionName: string;
+  };
+}
+
 interface Product {
   id: number;
   attributes: {
@@ -31,24 +43,38 @@ interface Product {
         };
       }[];
     };
-    weightPrice?: { [key: string]: number }[];
+    weightPrice?: WeightPrice[];
     qtyPrice?: number;
   };
 }
 
-export default async function Shop() {
-  const productCategoryData = await getStrapiData(
-    'api/product-collections',
-    productCollectionsQuery
-  );
+interface ProductCollectionResponse {
+  data: ProductCollection[];
+}
 
-  const productsData = await getStrapiData(
+interface ProductResponse {
+  data: Product[];
+}
+
+export default async function Shop() {
+  const productCategoryData =
+    await getStrapiData<ProductCollectionResponse>(
+      'api/product-collections',
+      productCollectionsQuery
+    );
+
+  const productsData = await getStrapiData<ProductResponse>(
     'api/products',
     productsQuery
   );
 
-  const productCategories = productCategoryData?.data || [];
-  const products: Product[] = productsData?.data || [];
+  // Check if the data is properly fetched
+  if (!productCategoryData || !productsData) {
+    return <p className="text-center">Failed to load data</p>;
+  }
+
+  const productCategories = productCategoryData.data;
+  const products = productsData.data;
 
   return (
     <div className="px-4 lg:px-8">
@@ -58,7 +84,7 @@ export default async function Shop() {
       )}
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.length > 0 ? (
           products.map((product) => {
             const { id, attributes } = product;
@@ -71,7 +97,6 @@ export default async function Shop() {
             } = attributes;
 
             const slug = formatSlug(name);
-
             const isFlower =
               product_collection.data.attributes.collectionName ===
               'Flower';

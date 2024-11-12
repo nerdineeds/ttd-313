@@ -37,7 +37,10 @@ export const productsQuery = qs.stringify({
 });
 
 // Reusable function to fetch data from Strapi with a specified path and query
-export async function getStrapiData(path: string, query: string) {
+export async function getStrapiData<T>(
+  path: string,
+  query: string
+): Promise<T> {
   const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
   const url = new URL(path, baseUrl);
   url.search = query;
@@ -47,7 +50,7 @@ export async function getStrapiData(path: string, query: string) {
     if (!response.ok) {
       throw new Error(`Failed to fetch data`);
     }
-    const data = await response.json();
+    const data: T = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching data from Strapi:', error);
