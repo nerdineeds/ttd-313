@@ -3,10 +3,11 @@
 import PriceDropdown from '@/components/priceDropdown';
 import Breadcrumb from '@/components/Breadcrumb';
 import { placeholderImg } from '@/utils/placeholderImage';
-import { getStrapiData, productQuery } from '@/utils/strapi-url';
+import { getStrapiData } from '@/utils/strapi-url';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { productQuery } from '@/utils/pageQueries';
 
 interface ProductAttributes {
   name: string;
@@ -40,120 +41,93 @@ export default function ProductPage() {
     useState<ProductAttributes | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch product data on client side
   useEffect(() => {
     if (!productId) return;
 
     async function fetchProductData() {
       setLoading(true);
-      const productData = await getStrapiData<{
-        data?: { attributes: ProductAttributes };
-      }>(`api/products/${productId}`, productQuery);
-      setProductDetails(productData?.data?.attributes || null);
+      const response = await getStrapiData<ProductAttributes>(
+        `api/products/${productId}`,
+        productQuery
+      );
+
+      if ('data' in response && response.data) {
+        if (Array.isArray(response.data)) {
+          if (response.data[0]?.attributes) {
+            setProductDetails(response.data[0].attributes);
+          } else {
+            setProductDetails(null);
+          }
+        } else {
+          setProductDetails(response.data.attributes || null);
+        }
+      } else {
+        setProductDetails(null);
+      }
       setLoading(false);
     }
 
     fetchProductData();
   }, [productId]);
 
-  if (!productId) {
+  if (!productId)
     return (
       <p className="text-center text-red-600">
         Product ID not provided
       </p>
     );
-  }
-
-  if (loading) {
-    return <p className="text-center">Loading...</p>;
-  }
-
-  if (!productDetails) {
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (!productDetails)
     return (
       <p className="text-center text-red-600">Product not found</p>
     );
-  }
 
   const productImage =
-    productDetails.photo?.data?.[0]?.attributes.url;
+    productDetails.photo?.data?.[0]?.attributes.url || placeholderImg;
   const productImageAlt =
     productDetails.photo?.data?.[0]?.attributes.alternativeText ||
     'Product Image';
-  const productDescription = productDetails.description;
   const isFlower =
     productDetails.product_collection?.data?.attributes
       .collectionName === 'Flower';
   const qtyPrice = productDetails.qtyPrice;
   const weightPrice = productDetails.weightPrice || [];
 
-  const category =
-    productDetails.product_collection?.data?.attributes
-      .collectionName;
-  const productName = productDetails.name;
-
   return (
     <div className="container mx-auto py-12 px-4 lg:px-0">
-      {/* Product Header */}
       <div className="bg-blue-200/60 text-center rounded-lg mb-4 h-40 lg:h-80 flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold my-2 uppercase">
-          {productName}
+          {productDetails.name}
         </h1>
-        <Breadcrumb category={category} productName={productName} />
+        <Breadcrumb
+          category={
+            productDetails.product_collection?.data?.attributes
+              .collectionName
+          }
+          productName={productDetails.name}
+        />
       </div>
-
       <div className="flex flex-col lg:flex-row justify-between gap-x-4 mt-10 lg:mt-20">
-        {/* Product Image */}
         <div className="w-full lg:w-1/2">
-          <div className="h-[500px] w-full overflow-hidden relative rounded-lg">
-            {productImage ? (
-              <Image
-                src={productImage}
-                alt={productImageAlt}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <Image
-                src={placeholderImg}
-                alt="Placeholder Image"
-                fill
-                className="object-cover"
-              />
-            )}
-          </div>
+          <Image
+            src={productImage}
+            alt={productImageAlt}
+            fill
+            className="object-cover"
+          />
         </div>
-
-        {/* Product Details */}
         <div className="w-full lg:w-1/2 flex flex-col gap-y-4 pt-12">
-          <h2 className="text-3xl font-bold">{productName}</h2>
+          <h2 className="text-3xl font-bold">
+            {productDetails.name}
+          </h2>
           {!isFlower ? (
-            qtyPrice ? (
-              <p className="text-2xl text-green-800">
-                ${qtyPrice}.00
-              </p>
-            ) : (
-              <p className="text-lg text-red-600">
-                Price not available
-              </p>
-            )
+            <p className="text-2xl text-green-800">${qtyPrice}.00</p>
           ) : (
             <PriceDropdown prices={weightPrice} />
           )}
           <p className="text-sm text-gray-700">
-            {productDescription || 'No description available'}
+            {productDetails.description || 'No description available'}
           </p>
-
-          {(productDetails.thcPercentage ||
-            productDetails.cbdPercentage) && (
-            <div className="mt-4">
-              {productDetails.thcPercentage && (
-                <div>THC: {productDetails.thcPercentage}%</div>
-              )}
-              {productDetails.cbdPercentage && (
-                <div>CBD: {productDetails.cbdPercentage}%</div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

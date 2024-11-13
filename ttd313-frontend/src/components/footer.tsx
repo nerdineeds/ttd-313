@@ -39,7 +39,8 @@ interface FooterProps {
   socials?: SocialItem[];
 }
 
-const getSocialIcon = (platform: string): React.ReactNode => {
+const getSocialIcon = (platform?: string): React.ReactNode => {
+  if (!platform) return null; // Return null if platform is undefined
   switch (platform.toLowerCase()) {
     case 'facebook':
       return <FaFacebook aria-hidden="true" className="h-6 w-6" />;
@@ -101,18 +102,19 @@ const Footer: React.FC<FooterProps> = ({
 
         {/* Social Media Icons */}
         <div className="mt-8 flex justify-center gap-x-10">
-          {socials.map((item) => (
-            <Link
-              key={item.name}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-600 hover:text-gray-800"
-            >
-              <span className="sr-only">{item.name}</span>
-              {getSocialIcon(item.name)}
-            </Link>
-          ))}
+          {socials &&
+            socials.map((item) => (
+              <Link
+                key={item.name}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-800"
+              >
+                <span className="sr-only">{item.name}</span>
+                {getSocialIcon(item.name)}
+              </Link>
+            ))}
         </div>
 
         {/* Footer Text */}

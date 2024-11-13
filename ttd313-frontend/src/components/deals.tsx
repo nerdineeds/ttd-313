@@ -1,38 +1,25 @@
 import React from 'react';
-import RichText from './RichText/RichText';
 import Image from 'next/image';
 import { placeholderImg } from '@/utils/placeholderImage';
+import RichText, { RichTextElement } from './RichText/RichText';
 
 // Define TypeScript interfaces for props
-interface RichTextChild {
-  text: string;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-  type: 'text';
-}
 
-interface RichTextElement {
-  type: 'paragraph' | 'heading' | 'list' | 'link';
-  level?: number;
-  children: RichTextChild[];
-}
-
-interface DailyDeal {
+export interface DailyDeal {
   id: string;
   dailyName: string;
 }
 
-interface SpecialDeal {
+export interface SpecialDeal {
   id: string;
   dealTitle: string;
 }
 
 interface DealsProps {
-  generalUpdates: RichTextElement[];
+  generalUpdates?: RichTextElement[];
   dailyDeals?: DailyDeal[];
   specials?: SpecialDeal[];
-  adhocInfo: RichTextElement[];
+  adhocInfo?: RichTextElement[];
 }
 
 const Deals: React.FC<DealsProps> = ({
@@ -57,10 +44,12 @@ const Deals: React.FC<DealsProps> = ({
           Deals
         </h2>
 
-        <RichText
-          content={generalUpdates}
-          paragraphClassName="text-center mb-6"
-        />
+        {generalUpdates && (
+          <RichText
+            content={generalUpdates}
+            paragraphClassName="text-center mb-6"
+          />
+        )}
 
         <div className="my-12">
           <h3 className="text-2xl uppercase font-semibold text-center underline mb-4">
@@ -76,24 +65,27 @@ const Deals: React.FC<DealsProps> = ({
         </div>
       </div>
       <div className="w-full lg:w-1/2 py-6 px-6 text-right shadow-xl rounded-3xl bg-gray-100 flex flex-col">
-        <h3 className="text-2xl uppercase font-semibold text-center underline mb-4">
-          SPECIALS
-        </h3>
-        {specials.map((deal) => {
-          return (
-            <div key={deal.id} className="text-center">
-              <p className="mb-1 text-black">{deal.dealTitle}</p>
-            </div>
-          );
-        })}
-
-        <div>
+        {specials && (
+          <>
+            <h3 className="text-2xl uppercase font-semibold text-center underline mb-4">
+              SPECIALS
+            </h3>
+            {specials.map((deal) => {
+              return (
+                <div key={deal.id} className="text-center">
+                  <p className="mb-1 text-black">{deal.dealTitle}</p>
+                </div>
+              );
+            })}
+          </>
+        )}
+        {adhocInfo && (
           <RichText
             content={adhocInfo}
             headingClassName="text-center mt-6 text-2xl uppercase"
             paragraphClassName="text-center mb-3 text-sm"
           />
-        </div>
+        )}
       </div>
     </div>
   );

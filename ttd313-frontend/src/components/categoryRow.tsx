@@ -3,69 +3,45 @@ import React from 'react';
 import Image from 'next/image';
 import { formatCollectionNameToUrl } from '@/utils/formatCollectionNameToUrl';
 import { placeholderImg } from '@/utils/placeholderImage';
+import { ProductCollection } from '@/utils/types';
 
-// Define the types for the category image
-interface CollectionImageAttributes {
-  url: string;
-}
+export type CategoryCardsProps = {
+  categories: ProductCollection[];
+};
 
-interface CollectionImageData {
-  data?: {
-    attributes?: CollectionImageAttributes;
-  };
-}
-
-// Define the types for each category
-interface Category {
-  id: number;
-  attributes: {
-    collectionName: string;
-    collectionImage?: CollectionImageData;
-  };
-}
-
-// Define the props for CategoryRow
-interface CategoryRowProps {
-  productCategories: Category[];
-}
-
-const CategoryRow: React.FC<CategoryRowProps> = ({
-  productCategories = [],
-}) => {
+export default function CategoryRow({
+  categories,
+}: CategoryCardsProps) {
+  console.log(categories);
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 my-6 w-full lg:px-0">
-      {productCategories.map((category, index) => {
-        const { collectionName, collectionImage } =
-          category.attributes;
+      {categories.map((category, index) => {
+        // Safely access attributes with optional chaining
+        const collectionName = category.collectionName || 'Unknown';
         const categoryImage =
-          collectionImage?.data?.attributes?.url || placeholderImg;
+          category.collectionImage?.data?.attributes.url ||
+          placeholderImg;
 
         return (
           <Link
             href={`/category/${formatCollectionNameToUrl(
               collectionName
             )}`}
-            key={category.id}
+            key={category.collectionName}
             className={`relative text-center flex items-center justify-center h-40 rounded-2xl shadow-xl overflow-hidden bg-gray-400 ${
-              productCategories.length % 2 !== 0 &&
-              index === productCategories.length - 1
+              categories.length % 2 !== 0 &&
+              index === categories.length - 1
                 ? 'col-span-2'
                 : ''
             }`}
           >
-            {/* Image */}
             <Image
               src={categoryImage}
               alt={collectionName}
               fill
-              className="absolute inset-0 -z-10 object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover object-center size-full"
             />
-
-            {/* Dark overlay */}
             <div className="absolute inset-0 bg-black opacity-50 -z-10" />
-
-            {/* Text on top */}
             <p className="uppercase font-bold text-xl text-white z-10">
               {collectionName}
             </p>
@@ -74,6 +50,4 @@ const CategoryRow: React.FC<CategoryRowProps> = ({
       })}
     </div>
   );
-};
-
-export default CategoryRow;
+}

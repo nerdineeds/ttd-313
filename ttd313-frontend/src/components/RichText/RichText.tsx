@@ -3,15 +3,15 @@ import React from 'react';
 // Define TypeScript interfaces for props
 interface RichTextChild {
   text: string;
-  type: 'text'; // Ensure the 'type' property is included
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
+  type: 'text';
 }
 
 export interface RichTextElement {
   type: 'paragraph' | 'heading' | 'list' | 'link';
-  level?: number; // For headings
+  level?: number;
   children: RichTextChild[];
 }
 
@@ -71,7 +71,6 @@ const RichText: React.FC<RichTextProps> = ({
             );
 
           case 'link':
-            // Ensure the link has a valid href
             const linkHref = element.children[0]?.text || '#';
             return (
               <a
@@ -95,7 +94,7 @@ const RichText: React.FC<RichTextProps> = ({
   );
 };
 
-// Helper component to apply inline styles for rich text child elements
+// Helper component to handle the rendering of child elements
 const RichTextChildComponent: React.FC<{ child: RichTextChild }> = ({
   child,
 }) => {
